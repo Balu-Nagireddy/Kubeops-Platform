@@ -12,7 +12,7 @@ image:
   pullPolicy: IfNotPresent
 
 common:
-  # Every workload serves plain HTTP on this port.
+  # Single source of truth for the HTTP listener and probe/container ports.
   port: 8080
 
 backend:
@@ -21,7 +21,6 @@ backend:
     APP_MODE: "api"
     APP_NAME: "backend"
     VERSION: "2.0.0"
-    PORT: "8080"
   resources:
     requests:
       cpu: "50m"
@@ -36,7 +35,6 @@ gateway:
     APP_MODE: "gateway"
     APP_NAME: "gateway"
     VERSION: "2.0.0"
-    PORT: "8080"
     BACKEND_URL: "http://backend:8080"
   resources:
     requests:
@@ -52,7 +50,6 @@ worker:
     APP_MODE: "worker"
     APP_NAME: "worker"
     VERSION: "2.0.0"
-    PORT: "8080"
   resources:
     requests:
       cpu: "50m"
@@ -68,7 +65,6 @@ reporter:
     APP_MODE: "reporter"
     APP_NAME: "reporter"
     VERSION: "2.0.0"
-    PORT: "8080"
   resources:
     requests:
       cpu: "50m"
@@ -83,7 +79,6 @@ metrics:
     APP_MODE: "api"
     APP_NAME: "metrics"
     VERSION: "2.0.0"
-    PORT: "8080"
   resources:
     requests:
       cpu: "50m"
