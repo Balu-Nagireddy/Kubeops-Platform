@@ -1,6 +1,6 @@
 
 # Stage 1: Build and validate
-FROM python:3.12.8-slim-bookworm AS builder
+FROM python:3.12.15-slim-trixie AS builder
 
 WORKDIR /build
 
@@ -11,7 +11,7 @@ RUN python -m py_compile main.py
 
 
 # Stage 2: Minimal runtime
-FROM python:3.12.8-slim-bookworm AS runtime
+FROM python:3.12.15-slim-trixie AS runtime
 
 # Create a dedicated non-root user
 RUN groupadd --gid 10001 appgroup && \
