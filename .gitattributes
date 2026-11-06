@@ -1,0 +1,20 @@
+# Normalize line endings to LF on checkout and commit across all platforms.
+# This prevents Windows CRLF noise in git status and diffs.
+* text=auto eol=lf
+
+# Shell scripts must always be LF so they execute correctly in Linux containers
+*.sh text eol=lf
+
+# YAML, Markdown, Python — always LF
+*.yaml text eol=lf
+*.yml  text eol=lf
+*.py   text eol=lf
+*.md   text eol=lf
+*.tpl  text eol=lf
+
+# Binaries — no line-ending conversion
+*.png binary
+*.jpg binary
+*.gif binary
+*.zip binary
+*.gz  binary

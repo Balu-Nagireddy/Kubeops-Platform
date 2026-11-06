@@ -78,3 +78,4 @@ echo " Setup complete! Service is healthy and ready."
 echo " Ingress Host: http://demo.local"
 echo " Verify with:  curl -H 'Host: demo.local' http://localhost/"
 echo "============================================================"
+

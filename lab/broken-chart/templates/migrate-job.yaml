@@ -25,6 +25,8 @@ spec:
               value: "migrate"
             - name: VERSION
               value: "2.0.0"
+            - name: PORT
+              value: "8080"
           securityContext:
             runAsNonRoot: true
             readOnlyRootFilesystem: true
