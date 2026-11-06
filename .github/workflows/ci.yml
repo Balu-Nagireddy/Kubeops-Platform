@@ -24,6 +24,9 @@ jobs:
         with:
           version: v3.14.0
 
+      - name: Validate setup script syntax
+        run: bash -n setup.sh
+
       - name: Lint application Helm chart
         run: helm lint chart/
 
