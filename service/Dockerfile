@@ -13,8 +13,13 @@ RUN python -m py_compile main.py
 # Stage 2: Minimal runtime
 FROM python:3.12.15-slim-trixie AS runtime
 
-# Create a dedicated non-root user
-RUN groupadd --gid 10001 appgroup && \
+# Apply current distribution security updates, then create a dedicated non-root user.
+# The base tag is pinned; package updates keep Debian security fixes current at build time.
+RUN apt-get update && \
+    apt-get upgrade -y --no-install-recommends && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    groupadd --gid 10001 appgroup && \
     useradd --uid 10001 \
             --gid 10001 \
             --no-create-home \
