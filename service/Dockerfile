@@ -1,36 +1,42 @@
-# Stage 1: Build & validation stage
+
+# Stage 1: Build and validate
 FROM python:3.12.8-slim-bookworm AS builder
 
 WORKDIR /build
 
-# Validate python script syntax
 COPY main.py .
-RUN python3 -m py_compile main.py
 
-# Stage 2: Minimal runtime stage
+# Validate Python syntax
+RUN python -m py_compile main.py
+
+
+# Stage 2: Minimal runtime
 FROM python:3.12.8-slim-bookworm AS runtime
 
-LABEL maintainer="Balu Nagireddy <balupower009@gmail.com>"
-LABEL org.opencontainers.image.title="eb-demo-service"
-LABEL org.opencontainers.image.description="Demo HTTP microservice for Enterprise Bot DevOps evaluation"
-
-# Create a dedicated non-root user and group (UID/GID 10001)
-RUN groupadd -g 10001 appgroup && \
-    useradd -u 10001 -g appgroup -s /sbin/nologin -M appuser
+# Create a dedicated non-root user
+RUN groupadd --gid 10001 appgroup && \
+    useradd --uid 10001 \
+            --gid 10001 \
+            --no-create-home \
+            --shell /usr/sbin/nologin \
+            appuser
 
 WORKDIR /app
 
-# Copy application source from builder
-COPY --from=builder --chown=10001:10001 /build/main.py /app/main.py
+# Copy validated application source
+COPY --from=builder --chown=10001:10001 \
+    /build/main.py ./main.py
 
-# Switch to non-root user
-USER 10001:10001
-
-# Default environment configuration
+# Runtime configuration
 ENV PORT=8080 \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
+# Document application port
 EXPOSE 8080
 
-ENTRYPOINT ["python3", "-u", "/app/main.py"]
+# Run as non-root
+USER 10001:10001
+
+# Start application
+ENTRYPOINT ["python", "-u", "/app/main.py"]
