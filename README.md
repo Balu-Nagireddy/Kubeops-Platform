@@ -116,6 +116,7 @@ cd lab
 
 The GitHub Actions workflow (`.github/workflows/ci.yml`) runs on pushes and pull requests. It:
 
+- Checks `setup.sh` shell syntax.
 - Lints and renders the application Helm chart with representative value overrides.
 - Lints and renders the Part 4 debug chart.
 - Builds the service container image.
