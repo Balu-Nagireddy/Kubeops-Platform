@@ -11,6 +11,7 @@ CLUSTER_NAME="demo"
 NAMESPACE="demo"
 RELEASE_NAME="demo"
 IMAGE_NAME="eb-demo-app:1.0.0"
+KUBE_CONTEXT="kind-${CLUSTER_NAME}"
 
 echo "============================================================"
 echo " Starting Enterprise Bot Demo Platform Setup"
@@ -42,8 +43,14 @@ nodes:
 EOF
 fi
 
-# Ensure context is pointing to the cluster
-kubectl config use-context "kind-${CLUSTER_NAME}" >/dev/null 2>&1 || true
+# Fail fast rather than silently continuing against an unintended cluster.
+if ! kubectl config get-contexts "$KUBE_CONTEXT" -o name | grep -Fxq "$KUBE_CONTEXT"; then
+  echo "ERROR: Expected Kubernetes context '$KUBE_CONTEXT' was not found." >&2
+  echo "Check that kind cluster '$CLUSTER_NAME' was created successfully." >&2
+  exit 1
+fi
+kubectl config use-context "$KUBE_CONTEXT" >/dev/null
+kubectl --context "$KUBE_CONTEXT" cluster-info >/dev/null
 
 # 2. Install ingress-nginx controller
 echo "==> [2/4] Ensuring ingress-nginx controller is deployed..."
@@ -78,4 +85,3 @@ echo " Setup complete! Service is healthy and ready."
 echo " Ingress Host: http://demo.local"
 echo " Verify with:  curl -H 'Host: demo.local' http://localhost/"
 echo "============================================================"
-
