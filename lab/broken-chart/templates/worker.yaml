@@ -24,6 +24,8 @@ spec:
             - name: http
               containerPort: {{ .Values.common.port }}
           env:
+            - name: PORT
+              value: {{ .Values.common.port | quote }}
             {{- range $name, $value := .Values.worker.env }}
             - name: {{ $name }}
               value: {{ $value | quote }}
@@ -41,5 +43,11 @@ spec:
             allowPrivilegeEscalation: false
             capabilities:
               drop: ["ALL"]
+          volumeMounts:
+            - name: cache-dir
+              mountPath: /var/cache/app
           resources:
             {{- toYaml .Values.worker.resources | nindent 12 }}
+      volumes:
+        - name: cache-dir
+          emptyDir: {}

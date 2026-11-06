@@ -24,6 +24,8 @@ spec:
             - name: http
               containerPort: {{ .Values.common.port }}
           env:
+            - name: PORT
+              value: {{ .Values.common.port | quote }}
             {{- range $name, $value := .Values.gateway.env }}
             - name: {{ $name }}
               value: {{ $value | quote }}
