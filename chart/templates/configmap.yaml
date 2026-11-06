@@ -7,3 +7,4 @@ metadata:
 data:
   APP_NAME: {{ .Values.config.appName | quote }}
   VERSION: {{ .Values.config.version | quote }}
+

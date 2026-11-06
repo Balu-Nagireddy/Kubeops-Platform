@@ -71,3 +71,4 @@ spec:
         - name: config-volume
           configMap:
             name: {{ include "demo.fullname" . }}-config
+

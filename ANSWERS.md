@@ -32,3 +32,4 @@
 - **TLS & Certificate References**: Moving from per-Ingress `cert-manager.io/cluster-issuer` annotations to Gateway API requires re-anchoring cert issuance onto the `Gateway` listeners or managing `certificateRefs`.
 - **Cross-Namespace Routing**: If routes target services across namespaces, missing `ReferenceGrant` objects will silently reject route attachments.
 - **Client IP & Header Forwarding**: Inconsistent `X-Forwarded-For` / `X-Real-IP` handling and proxy protocol settings can break upstream geo-location, rate-limiting, and client authentication.
+

@@ -58,3 +58,4 @@ securityContext:
 
 podSecurityContext:
   fsGroup: 10001
+

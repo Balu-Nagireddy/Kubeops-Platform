@@ -170,3 +170,4 @@ In accordance with Enterprise Bot's transparent AI disclosure policy:
 - **What was done manually**:
   - All diagnosis in Part 4 was performed directly against the cluster output and manifests: tracing the `restartPolicy` API validation, inspecting ReplicaSet admission events for `LimitRange` violations, reviewing the worker's filesystem crash logs, identifying the default port mismatch (8081 vs 8080), correcting the `BACKEND_URL` namespace resolution, and auditing the `RoleBinding` subjects.
   - The architectural reasoning and trade-offs in `ANSWERS.md` and this `README.md` reflect direct engineering experience with production Kubernetes migrations and incident management.
+

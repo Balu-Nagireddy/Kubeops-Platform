@@ -161,3 +161,4 @@ balu@devops-workstation:~/Assignment/eb-devops-takehome-v2/lab$ ./scenario.sh ve
 ALL GREEN — 11/11 checks passed. This part is done.
 balu@devops-workstation:~/Assignment/eb-devops-takehome-v2/lab$ exit
 Script done on 2026-11-06 16:35:12+05:30 [COMMAND_EXIT_CODE="0"]
+
