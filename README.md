@@ -77,8 +77,17 @@ The application dynamically reads configuration:
 # Patch the ConfigMap in namespace demo
 kubectl -n demo patch configmap demo-config --type merge -p '{"data":{"APP_NAME":"custom-bot","VERSION":"3.2.1"}}'
 
-# The service immediately serves the updated values
-curl -s -H "Host: demo.local" http://localhost/
+# ConfigMap volumes are updated asynchronously by kubelet. Poll until
+# the projected files are refreshed and the new values are visible.
+for attempt in $(seq 1 30); do
+  response="$(curl -s -H "Host: demo.local" http://localhost/)"
+  if printf '%s' "$response" | grep -q '"app": "custom-bot"' &&
+     printf '%s' "$response" | grep -q '"version": "3.2.1"'; then
+    printf '%s\n' "$response"
+    break
+  fi
+  sleep 2
+done
 ```
 
 ### 4. Verify Part 4 Debug Lab
@@ -94,6 +103,19 @@ cd lab
 ```
 `./scenario.sh verify` will execute all 11 assertions and output:
 `ALL GREEN — 11/11 checks passed. This part is done.`
+
+---
+
+## CI Validation
+
+The GitHub Actions workflow (`.github/workflows/ci.yml`) runs on pushes and pull requests. It:
+
+- Lints and renders the application Helm chart with representative value overrides.
+- Lints and renders the Part 4 debug chart.
+- Builds the service container image.
+- Runs Trivy against OS and application-library vulnerabilities and fails on any reported HIGH or CRITICAL finding, including findings without an available fix.
+
+The CI workflow provides static validation; the local `kind` setup and Part 4 cluster scenario must still be executed in the target environment.
 
 ---
 
@@ -169,5 +191,5 @@ In accordance with Enterprise Bot's transparent AI disclosure policy:
   - I used it to quickly double-check the exact field syntax for `ingress-nginx` kind extraPortMappings and `job.spec.template.spec.restartPolicy` schema requirements.
 - **What was done manually**:
   - All diagnosis in Part 4 was performed directly against the cluster output and manifests: tracing the `restartPolicy` API validation, inspecting ReplicaSet admission events for `LimitRange` violations, reviewing the worker's filesystem crash logs, identifying the default port mismatch (8081 vs 8080), correcting the `BACKEND_URL` namespace resolution, and auditing the `RoleBinding` subjects.
-  - The architectural reasoning and trade-offs in `ANSWERS.md` and this `README.md` reflect direct engineering experience with production Kubernetes migrations and incident management.
+  - The architectural reasoning and trade-offs in `ANSWERS.md` and this `README.md` are based on Kubernetes operations concepts, engineering analysis, and the production deployment/incident-response experience described in my background. The Gateway API migration is presented as a proposed strategy, not as a claim that I have already completed that specific migration.
 
