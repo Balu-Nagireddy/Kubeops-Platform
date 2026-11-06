@@ -6,10 +6,14 @@ on:
   pull_request:
     branches: [ main, master ]
 
+permissions:
+  contents: read
+
 jobs:
   lint-and-scan:
     name: Lint, Build & Security Scan
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
@@ -20,26 +24,34 @@ jobs:
         with:
           version: v3.14.0
 
-      - name: Lint Helm Chart
-        run: |
-          echo "==> Linting demo chart..."
-          helm lint chart/
+      - name: Lint application Helm chart
+        run: helm lint chart/
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Render application chart with representative overrides
+        run: |
+          helm template demo ./chart \
+            --set replicaCount=3 \
+            --set config.appName=ci-demo \
+            --set config.version=2.0.0 \
+            --set ingress.host=demo.local > /tmp/application-manifests.yaml
+          test -s /tmp/application-manifests.yaml
+
+      - name: Lint Part 4 debug chart
+        run: helm lint lab/broken-chart/
+
+      - name: Render Part 4 debug chart
+        run: |
+          helm template debug-lab ./lab/broken-chart > /tmp/debug-lab-manifests.yaml
+          test -s /tmp/debug-lab-manifests.yaml
 
       - name: Build Docker image
-        run: |
-          echo "==> Building container image..."
-          docker build -t eb-demo-app:test service/
+        run: docker build --pull -t eb-demo-app:test service/
 
-      - name: Run Trivy Vulnerability Scanner
-        uses: aquasecurity/trivy-action@master
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: 'eb-demo-app:test'
-          format: 'table'
+          image-ref: eb-demo-app:test
+          format: table
           exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'HIGH,CRITICAL'
-
+          vuln-type: os,library
+          severity: HIGH,CRITICAL
