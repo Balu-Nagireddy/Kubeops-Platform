@@ -79,15 +79,21 @@ kubectl -n demo patch configmap demo-config --type merge -p '{"data":{"APP_NAME"
 
 # ConfigMap volumes are updated asynchronously by kubelet. Poll until
 # the projected files are refreshed and the new values are visible.
+updated=0
 for attempt in $(seq 1 30); do
-  response="$(curl -s -H "Host: demo.local" http://localhost/)"
+  response="$(curl -fsS -H "Host: demo.local" http://localhost/)" || response=""
   if printf '%s' "$response" | grep -q '"app": "custom-bot"' &&
      printf '%s' "$response" | grep -q '"version": "3.2.1"'; then
     printf '%s\n' "$response"
+    updated=1
     break
   fi
   sleep 2
 done
+if [ "$updated" -ne 1 ]; then
+  echo "ERROR: ConfigMap values were not observed within 60 seconds." >&2
+  exit 1
+fi
 ```
 
 ### 4. Verify Part 4 Debug Lab
