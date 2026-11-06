@@ -1,0 +1,6 @@
+apiVersion: v2
+name: demo
+description: Production-grade Helm chart for Enterprise Bot demo microservice
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
